@@ -1,0 +1,51 @@
+{
+  "seed": 42,
+  "classes": [
+    "akiec",
+    "bcc",
+    "bkl",
+    "df",
+    "mel",
+    "nv",
+    "vasc"
+  ],
+  "n_images": {
+    "train": 7009,
+    "val": 1002,
+    "test": 2004
+  },
+  "n_lesions": {
+    "train": 5228,
+    "val": 747,
+    "test": 1495
+  },
+  "class_counts": {
+    "train": {
+      "akiec": 228,
+      "bcc": 359,
+      "bkl": 769,
+      "df": 81,
+      "mel": 779,
+      "nv": 4694,
+      "vasc": 99
+    },
+    "val": {
+      "akiec": 33,
+      "bcc": 52,
+      "bkl": 110,
+      "df": 11,
+      "mel": 112,
+      "nv": 670,
+      "vasc": 14
+    },
+    "test": {
+      "akiec": 66,
+      "bcc": 103,
+      "bkl": 220,
+      "df": 23,
+      "mel": 222,
+      "nv": 1341,
+      "vasc": 29
+    }
+  }
+}

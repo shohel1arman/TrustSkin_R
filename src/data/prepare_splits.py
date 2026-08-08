@@ -37,8 +37,8 @@ def main() -> None:
     ap.add_argument("--image-dirs", nargs="+", required=True, help="Directories containing the .jpg images")
     ap.add_argument("--out-dir", default="data/splits")
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--test-folds", type=int, default=5, help="1/N of lesions go to test (5 -> 20%)")
-    ap.add_argument("--val-folds", type=int, default=8, help="1/N of remaining lesions go to val (8 -> 10% overall)")
+    ap.add_argument("--test-folds", type=int, default=5, help="1/N of lesions go to test (5 -> 20%%)")
+    ap.add_argument("--val-folds", type=int, default=8, help="1/N of remaining lesions go to val (8 -> 10%% overall)")
     args = ap.parse_args()
 
     df = pd.read_csv(args.metadata)

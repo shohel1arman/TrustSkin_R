@@ -1,0 +1,18 @@
+# TrustSkin baseline config: swin_tiny
+model: swin_tiny
+num_classes: 7
+pretrained: true
+drop_rate: 0.3
+image_size: 224
+seed: 42
+train_csv: data/splits/train.csv
+val_csv: data/splits/val.csv
+epochs: 40
+batch_size: 64
+lr: 1.0e-4
+weight_decay: 0.05
+label_smoothing: 0.0
+class_weighted_loss: true
+early_stop_patience: 7
+num_workers: 8
+out_dir: results/checkpoints

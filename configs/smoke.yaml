@@ -1,0 +1,18 @@
+# Pipeline smoke test only - NOT for real experiments
+model: resnet18
+num_classes: 7
+pretrained: false
+drop_rate: 0.3
+image_size: 64
+seed: 42
+train_csv: data/splits/train.csv
+val_csv: data/splits/val.csv
+epochs: 2
+batch_size: 8
+lr: 1.0e-3
+weight_decay: 0.05
+label_smoothing: 0.0
+class_weighted_loss: true
+early_stop_patience: 7
+num_workers: 0
+out_dir: results/checkpoints

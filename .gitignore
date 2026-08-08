@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+data/ham10000/
+data/isic_external/
+results/checkpoints/
+results/logits/
+*.zip

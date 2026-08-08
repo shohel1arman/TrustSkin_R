@@ -1,49 +1,31 @@
 # TrustSkin
 
-**Beyond Accuracy — A Multidimensional Framework for Trustworthy Skin Lesion Classification under Uncertainty and Distribution Shift**
+A framework for checking whether a skin-lesion image classifier is actually *trustworthy*, not just accurate.
 
-TrustSkin evaluates whether an image-based skin-lesion classifier is genuinely *trustworthy*, not merely accurate. A model can be highly confident and still wrong; a clinically meaningful system should predict accurately, recognize its own uncertainty, focus on the lesion rather than acquisition artifacts, stay stable under realistic image changes, behave consistently with its own explanations, and degrade gracefully on unfamiliar data. TrustSkin measures all of these jointly and combines them into a single per-image Trustworthiness Score.
+A model can be confident and still wrong. TrustSkin looks at a prediction from several angles at once — is it correct, does its confidence match reality, does it know when it might be wrong, does its explanation point at the lesion rather than the background, does it stay stable when the image is perturbed, and does it hold up on data from a different source — and combines these into a single per-image trust score.
 
-Target venue: **IET Computer Vision** (Wiley, open access).
-
----
-
-## Why this project
-
-Most skin-lesion papers report accuracy, F1, and AUROC and stop there. TrustSkin is deliberately not another classifier. The contribution is an evaluation *framework* and two proposed instruments — the Explanation–Decision Alignment Score (EDAS) and an image-level Trustworthiness Score (TS) — validated behaviorally. The central experimental question throughout is: **do these reliability dimensions reveal unsafe behavior that conventional accuracy and confidence metrics miss?**
-
-The four backbones (EfficientNet-B3, ConvNeXt-Tiny, ViT-B/16, Swin-T) are representative substrates, not the novelty. A recurring question is whether the *most accurate* architecture is also the *most trustworthy*.
+The four backbones (EfficientNet-B3, ConvNeXt-Tiny, ViT-B/16, Swin-T) are just representative models to test the framework on. The interesting question is whether the most accurate model is also the most trustworthy — often it isn't.
 
 ---
 
-## Trustworthiness dimensions
+## What gets measured
 
-| Dimension | What it asks | Core methods |
+| Dimension | The question | How |
 |---|---|---|
 | Correctness | Is the prediction right? | Accuracy, balanced accuracy, macro-F1, MCC, AUROC, AUPRC |
 | Calibration | Does confidence match correctness? | ECE, MCE, Brier, NLL, reliability diagrams, temperature scaling |
-| Uncertainty | Does the model know when it may be wrong? | MC Dropout, deep ensembles, risk–coverage, AURC, E-AURC |
+| Uncertainty | Does the model know when it might be wrong? | MC Dropout, deep ensembles, risk–coverage, AURC |
 | Explanation quality | Does the explanation point at the lesion? | Grad-CAM/++, Integrated Gradients, attention rollout; IoU, Dice, pointing game |
-| Robustness | Do predictions survive realistic perturbations? | 7 perturbation families × 5 severities; consistency, confidence degradation, JS divergence |
-| Explanation stability | Do explanations survive the same perturbations? | SSIM, cosine, IoU/Dice, Spearman between clean and perturbed maps |
-| Alignment (EDAS) | Do explanation-important regions actually drive the decision? | Paired counterfactual masking of important vs control regions |
-| Distribution shift | Do trust signals degrade informatively off-domain? | External ISIC evaluation on a locked set |
+| Robustness | Do predictions survive realistic image changes? | 7 perturbation families × 5 severities |
+| Explanation stability | Do explanations survive the same changes? | SSIM, cosine, IoU/Dice, Spearman on clean vs perturbed maps |
+| Alignment (EDAS) | Do the "important" regions actually drive the decision? | Paired counterfactual masking of important vs control regions |
+| Distribution shift | Do the trust signals degrade sensibly on outside data? | External ISIC evaluation on a locked set |
 
 ---
 
-## Project phases
+## How it's organized
 
-Each phase is designed and sandbox-verified before running, then run on the GPU node, then reviewed against results before moving on. Phases 2–3 reuse the saved probability files from Phase 1, so they need no re-inference.
-
-| Phase | Content | Status |
-|---|---|---|
-| 1 | Leakage-controlled splits, baseline training (4 backbones), full classification metrics | ready |
-| 2 | Calibration: ECE, MCE, Brier, NLL, reliability diagrams, temperature scaling | next |
-| 3 | Uncertainty: MC Dropout, deep ensembles, risk–coverage, AURC, error detection | planned |
-| 4 | XAI + localization: Grad-CAM/++, IG, attention rollout; IoU/Dice/pointing game vs lesion masks; lesion/background/artifact attribution | planned |
-| 5 | Robustness + explanation stability: perturbation families × severities | planned |
-| 6 | EDAS: counterfactual important-vs-control region interventions | planned |
-| 7 | Trustworthiness Score, external ISIC shift, ablations (A0–A6), statistical tests | planned |
+The work moves in stages. First: leakage-controlled data splits, baseline training for the four backbones, and full classification metrics. Then calibration, uncertainty, explainability and localization, robustness and explanation stability, the EDAS counterfactual test, and finally the combined trust score with external-shift evaluation and ablations. Later stages reuse the saved probabilities from the baseline stage, so they don't need to re-run inference.
 
 ---
 
@@ -51,28 +33,28 @@ Each phase is designed and sandbox-verified before running, then run on the GPU 
 
 ```
 TrustSkin_R/
-├── configs/                 # one YAML per backbone + smoke config
+├── configs/                 # one YAML per backbone + a smoke config
 │   ├── efficientnet.yaml
 │   ├── convnext.yaml
 │   ├── vit.yaml
 │   ├── swin.yaml
-│   └── smoke.yaml           # tiny resnet18 pipeline test, NOT for experiments
+│   └── smoke.yaml           # tiny resnet18 pipeline check, not for real runs
 ├── src/
 │   ├── data/
 │   │   ├── prepare_splits.py   # lesion-grouped, leakage-checked train/val/test
 │   │   └── dataset.py          # HAM10000 dataset + train/eval transforms
 │   ├── models/
-│   │   └── factory.py          # timm backbones + MC-Dropout hook (Phase 3)
+│   │   └── factory.py          # timm backbones + MC-Dropout hook
 │   ├── training/
 │   │   └── train.py            # AdamW, cosine, AMP, class-weighted loss, early stop
 │   └── evaluation/
-│       └── evaluate.py         # all Section-9 metrics + saved logits/probs
+│       └── evaluate.py         # all classification metrics + saved logits/probs
 ├── data/
 │   ├── ham10000/            # dataset (gitignored)
-│   └── splits/              # locked CSVs (committed)
+│   └── splits/              # locked split CSVs (committed)
 ├── results/
 │   ├── csv/                 # metrics / per-class / confusion
-│   ├── logits/              # saved probabilities, reused by Phases 2–3 (gitignored)
+│   ├── logits/              # saved probabilities, reused later (gitignored)
 │   └── checkpoints/         # best.pt, history.csv, config, env (gitignored)
 ├── requirements.txt
 └── README.md
@@ -82,7 +64,7 @@ TrustSkin_R/
 
 ## Setup
 
-Requires Python 3.10+ and [`uv`](https://github.com/astral-sh/uv). If conda is active, run `conda deactivate` first to avoid PATH conflicts.
+Needs Python 3.10+ and [`uv`](https://github.com/astral-sh/uv). If conda is active, run `conda deactivate` first.
 
 ```bash
 uv venv
@@ -95,7 +77,7 @@ python -c "import torch, timm, sklearn, pandas, PIL, yaml; print('imports OK')"
 
 ## Dataset
 
-**HAM10000** — 10,015 dermoscopic images, 7 diagnostic classes. Primary development and internal evaluation set.
+**HAM10000** — 10,015 dermoscopic images, 7 classes. The class balance is skewed (NV dominates), so the project leans on macro metrics, balanced accuracy, MCC, and per-class numbers rather than raw accuracy.
 
 | Code | Category | Type |
 |---|---|---|
@@ -107,7 +89,7 @@ python -c "import torch, timm, sklearn, pandas, PIL, yaml; print('imports OK')"
 | DF | Dermatofibroma | Benign |
 | VASC | Vascular lesion | Benign |
 
-Source: Kaggle `kmader/skin-cancer-mnist-ham10000`, or Harvard Dataverse DOI `10.7910/DVN/DBW86T`.
+Grab it from Kaggle (`kmader/skin-cancer-mnist-ham10000`) or Harvard Dataverse (DOI `10.7910/DVN/DBW86T`):
 
 ```bash
 mkdir -p data/ham10000 && cd data/ham10000
@@ -116,17 +98,15 @@ unzip -q skin-cancer-mnist-ham10000.zip
 cd ../..
 ```
 
-Expected after unzip: `HAM10000_metadata.csv`, plus images in `HAM10000_images_part_1/` and `HAM10000_images_part_2/`. If your unzip produces a single combined image folder, pass that one folder to `--image-dirs` instead of two.
+After unzipping you should have `HAM10000_metadata.csv` and images in `HAM10000_images_part_1/` and `HAM10000_images_part_2/`. If your unzip drops everything into one image folder instead of two, just pass that single folder to `--image-dirs`.
 
-**External validation (Phase 7):** ISIC 2018/2019, label- and preprocessing-mapped, kept isolated from all development. It is never seen during training or model selection.
-
-The class distribution is heavily imbalanced (NV dominates), so the project emphasizes macro-averaged metrics, balanced accuracy, MCC, and per-class analysis over raw accuracy.
+External data (ISIC 2018/2019) is used only for the out-of-domain check and is kept away from all training and model selection.
 
 ---
 
-## Phase 1 workflow
+## Running it
 
-**1. Build leakage-controlled splits.** HAM10000 has multiple images per lesion (`lesion_id`); if one lesion appears in two splits, metrics are inflated. The script groups by `lesion_id`, stratifies approximately by class, and hard-fails if any lesion leaks. Roughly 70/10/20 by lesion.
+**1. Make the splits.** HAM10000 has several images of the same lesion, so splitting by image leaks. This groups by `lesion_id`, stratifies roughly by class, and stops with an error if any lesion ends up in two splits. Roughly 70/10/20.
 
 ```bash
 uv run python -m src.data.prepare_splits \
@@ -135,9 +115,9 @@ uv run python -m src.data.prepare_splits \
     --out-dir data/splits --seed 42
 ```
 
-Commit the resulting `data/splits/*.csv` — the exact split is part of reproducibility.
+Commit `data/splits/*.csv` — the exact split matters for reproducing results.
 
-**2. Train each backbone.** Best checkpoint is selected on validation macro-F1. Add `--seed 43` / `--seed 44` later for the multi-seed final table and the Phase-3 ensemble.
+**2. Train the backbones.** Best checkpoint is picked on validation macro-F1. Add `--seed 43` / `--seed 44` for the multi-seed runs.
 
 ```bash
 uv run python -m src.training.train --config configs/efficientnet.yaml
@@ -146,7 +126,7 @@ uv run python -m src.training.train --config configs/vit.yaml
 uv run python -m src.training.train --config configs/swin.yaml
 ```
 
-**3. Evaluate on val and test.** Repeat per checkpoint and split.
+**3. Evaluate on val and test.**
 
 ```bash
 uv run python -m src.evaluation.evaluate \
@@ -154,7 +134,7 @@ uv run python -m src.evaluation.evaluate \
     --split-csv data/splits/test.csv --split-name test
 ```
 
-Or all four at once:
+Or loop over all four:
 
 ```bash
 for m in efficientnet_b3 convnext_tiny vit_b16 swin_tiny; do
@@ -163,9 +143,9 @@ for m in efficientnet_b3 convnext_tiny vit_b16 swin_tiny; do
 done
 ```
 
-**Outputs:** metrics / per-class / confusion CSVs in `results/csv/`; raw logits and softmax probabilities in `results/logits/<run>_<split>.npz` (reused by Phases 2–3 with no re-inference); best checkpoint, `history.csv`, resolved config, and environment record in `results/checkpoints/<run>/`.
+Everything lands in `results/csv/` (metrics, per-class, confusion), `results/logits/` (raw probabilities, reused later), and `results/checkpoints/<run>/` (checkpoint, training history, config, environment).
 
-**Pipeline smoke test** (validates the code path before spending GPU time):
+**Quick pipeline check** before spending GPU time:
 
 ```bash
 uv run python -m src.training.train --config configs/smoke.yaml
@@ -173,9 +153,9 @@ uv run python -m src.training.train --config configs/smoke.yaml
 
 ---
 
-## Running on the GPU node
+## On the GPU node
 
-Train inside `tmux` so an SSH drop does not kill the run. Rebuild splits on the node with the same seed so the `path` column points at node-local files (lesion assignment is identical; only paths differ).
+Run training in `tmux` so a dropped SSH connection doesn't kill it. Rebuild the splits on the node with the same seed so the file paths point to node-local images (same lesion assignment, just different paths).
 
 ```bash
 tmux new -s trustskin
@@ -192,28 +172,22 @@ uv run python -m src.training.train --config configs/swin.yaml
 
 ---
 
-## Sanity expectations
+## Quick sanity check
 
-On a lesion-grouped HAM10000 test split, test macro-F1 around **0.70–0.80** is healthy. Test macro-F1 above ~0.90 is a red flag for leakage, not a success — investigate the split before trusting it. One backbone far below the others usually means a learning-rate mismatch in its config.
-
----
-
-## Reproducibility rules (do not break)
-
-- The test split is **locked** after `prepare_splits`; never tune or model-select on it.
-- External ISIC data (Phase 7) is never seen during development.
-- Every result CSV and checkpoint is tied to a `<model>_seed<seed>` run name.
-- Final reported numbers are mean ± std over seeds 42 / 43 / 44.
-- Config, seed, library versions, and hardware are recorded per run (`config_used.yaml`, `env.json`).
+On a lesion-grouped split, test macro-F1 around **0.70–0.80** is normal. If it's above ~0.90, that usually means leakage, not a great model — check the split. If one backbone is way behind the others, it's probably a learning-rate mismatch in its config.
 
 ---
 
-## Ethical scope
+## A few rules worth keeping
 
-HAM10000 and ISIC do not represent all populations, devices, or clinical settings. The Trustworthiness Score is a research instrument, not a validated clinical decision rule — any clinical use would require prospective validation, regulatory review, and clinician-in-the-loop studies. XAI heatmaps are hypotheses about model behavior, not causal proof, which is exactly why EDAS and counterfactual testing are included.
+- The test split is locked once made — never tune or model-select on it.
+- External ISIC data stays unseen during development.
+- Every result and checkpoint carries its `<model>_seed<seed>` run name.
+- Final numbers are mean ± std over seeds 42 / 43 / 44.
+- Config, seed, library versions, and hardware are saved per run.
 
 ---
 
-## Citation
+## A note on scope
 
-A `CITATION.cff` and BibTeX entry will be added on submission.
+HAM10000 and ISIC don't cover every population, device, or clinic. The trust score is a research tool, not a clinical decision rule — real use would need prospective validation and clinical review. Heatmaps are hints about model behavior, not proof of cause, which is the whole reason EDAS and the counterfactual tests exist.

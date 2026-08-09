@@ -1,0 +1,12 @@
+{
+  "run": "vit_b16_seed42",
+  "n": 306,
+  "topk": 0.1,
+  "mean_drop_high": 0.0824,
+  "mean_drop_rand": 0.0959,
+  "mean_edas": -0.0135,
+  "mean_edas_norm": -0.003,
+  "faithful_fraction": 0.5065,
+  "edas_correct": -0.0146,
+  "edas_wrong": -0.0112
+}

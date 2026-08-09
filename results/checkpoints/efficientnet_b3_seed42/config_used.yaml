@@ -1,0 +1,17 @@
+batch_size: 64
+class_weighted_loss: true
+drop_rate: 0.3
+early_stop_patience: 7
+epochs: 40
+image_size: 224
+label_smoothing: 0.0
+lr: 0.0003
+model: efficientnet_b3
+num_classes: 7
+num_workers: 8
+out_dir: results/checkpoints
+pretrained: true
+seed: 42
+train_csv: data/splits/train.csv
+val_csv: data/splits/val.csv
+weight_decay: 0.05

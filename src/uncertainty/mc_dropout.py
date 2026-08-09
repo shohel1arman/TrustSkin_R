@@ -24,7 +24,9 @@ def mc_forward(model, loader, device, T):
     """Each image loaded once; T dropout passes run in memory."""
     enable_mc_dropout(model)
     batch_stacks, targets, ids = [], [], []
-    for x, y, image_ids in loader:
+    import time as _t
+    _n=len(loader); _t0=_t.time()
+    for _bi,(x, y, image_ids) in enumerate(loader):
         x = x.to(device, non_blocking=True)
         passes = []
         for _ in range(T):
@@ -33,6 +35,7 @@ def mc_forward(model, loader, device, T):
         batch_stacks.append(np.stack(passes, axis=0))
         targets.append(y.numpy())
         ids.extend(list(image_ids))
+        print(f"  batch {_bi+1}/{_n} {_t.time()-_t0:.0f}s", flush=True)
     probs_TNK = np.concatenate(batch_stacks, axis=1)
     return probs_TNK, np.concatenate(targets), np.array(ids)
 
@@ -79,6 +82,7 @@ def main():
     ap.add_argument("--batch-size", type=int, default=64)
     ap.add_argument("--out-dir", default="results/uncertainty")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--limit", type=int, default=0)
     args = ap.parse_args()
 
     torch.manual_seed(args.seed)
@@ -95,8 +99,10 @@ def main():
     model.to(device)
 
     ds = HAM10000Dataset(args.split_csv, cfg.get("image_size", 224), train=False)
+    if args.limit > 0:
+        ds.df = ds.df.iloc[:args.limit].reset_index(drop=True)
     loader = DataLoader(ds, batch_size=args.batch_size, shuffle=False,
-                        num_workers=cfg.get("num_workers", 4))
+                        num_workers=2)
 
     probs_TNK, targets, ids = mc_forward(model, loader, device, args.T)
     s = uncertainty_scores(probs_TNK)

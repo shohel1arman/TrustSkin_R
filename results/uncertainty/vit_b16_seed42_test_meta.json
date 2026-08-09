@@ -1,0 +1,8 @@
+{
+  "run": "vit_b16_seed42",
+  "split": "test",
+  "T": 30,
+  "n": 2014,
+  "accuracy": 0.7542204568023834,
+  "device": "mps"
+}

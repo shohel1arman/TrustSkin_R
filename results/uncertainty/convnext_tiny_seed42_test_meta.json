@@ -1,0 +1,8 @@
+{
+  "run": "convnext_tiny_seed42",
+  "split": "test",
+  "T": 30,
+  "n": 2014,
+  "accuracy": 0.8371400198609732,
+  "device": "mps"
+}

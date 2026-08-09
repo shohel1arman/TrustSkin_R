@@ -1,0 +1,8 @@
+{
+  "run": "efficientnet_b3_seed42",
+  "split": "test",
+  "T": 30,
+  "n": 2014,
+  "accuracy": 0.8157894736842105,
+  "device": "mps"
+}

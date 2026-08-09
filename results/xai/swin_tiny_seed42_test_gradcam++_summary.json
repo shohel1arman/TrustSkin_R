@@ -1,0 +1,15 @@
+{
+  "run": "swin_tiny_seed42",
+  "method": "gradcam++",
+  "n": 306,
+  "missing_mask": 0,
+  "mean_iou": 0.1894,
+  "mean_iou_p20": 0.2347,
+  "mean_dice": 0.2815,
+  "mean_focus_ratio": 2.6303,
+  "pointing_game": 0.5196,
+  "mean_lesion_frac": 0.3566,
+  "mean_bg_frac": 0.6434,
+  "iou_correct": 0.1975,
+  "iou_wrong": 0.1668
+}

@@ -1,0 +1,3 @@
+variant,n,auroc_trust,auroc_confidence,auroc_certainty,auroc_diff_TS_minus_conf,ci95_low,ci95_high,prob_TS_beats_conf
+TS_light_full,2014,0.8458,0.8438,0.8471,0.002,0.0009,0.003,1.0
+TS_full_subset,306,0.7045,0.8039,0.8095,-0.0997,-0.1578,-0.0466,0.0

@@ -1,0 +1,5 @@
+,conf_n,certainty,loc_score,edas_n
+conf_n,1.0,0.961,-0.038,-0.166
+certainty,0.961,1.0,-0.044,-0.193
+loc_score,-0.038,-0.044,1.0,0.356
+edas_n,-0.166,-0.193,0.356,1.0

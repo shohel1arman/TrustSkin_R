@@ -1,0 +1,24 @@
+[
+  {
+    "variant": "TS_light_full",
+    "n": 2014,
+    "auroc_trust": 0.8534,
+    "auroc_confidence": 0.8527,
+    "auroc_certainty": 0.854,
+    "auroc_diff_TS_minus_conf": 0.0007,
+    "ci95_low": 0.0,
+    "ci95_high": 0.0013,
+    "prob_TS_beats_conf": 0.9775
+  },
+  {
+    "variant": "TS_full_subset",
+    "n": 306,
+    "auroc_trust": 0.6194,
+    "auroc_confidence": 0.7584,
+    "auroc_certainty": 0.7597,
+    "auroc_diff_TS_minus_conf": -0.1401,
+    "ci95_low": -0.2112,
+    "ci95_high": -0.0748,
+    "prob_TS_beats_conf": 0.0
+  }
+]

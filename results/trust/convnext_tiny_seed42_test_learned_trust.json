@@ -1,0 +1,25 @@
+{
+  "run": "convnext_tiny_seed42",
+  "n": 306,
+  "components": [
+    "conf_n",
+    "certainty",
+    "loc_score",
+    "edas_n"
+  ],
+  "auroc_confidence": 0.7584,
+  "auroc_learned_combiner_oof": 0.6749,
+  "learned_beats_confidence": false,
+  "learned_weights": {
+    "conf_n": 0.9986,
+    "certainty": 1.5776,
+    "loc_score": -0.1615,
+    "edas_n": 0.1753
+  },
+  "component_corr_with_correct": {
+    "conf_n": 0.3055,
+    "certainty": 0.3391,
+    "loc_score": -0.043,
+    "edas_n": 0.0251
+  }
+}

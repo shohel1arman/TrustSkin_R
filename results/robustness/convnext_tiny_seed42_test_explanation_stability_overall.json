@@ -1,0 +1,8 @@
+{
+  "run": "convnext_tiny_seed42",
+  "n_images": 56,
+  "mean_ssim": 0.7707,
+  "mean_cosine": 0.9239,
+  "mean_spearman": 0.782,
+  "mean_iou_p20": 0.5964
+}

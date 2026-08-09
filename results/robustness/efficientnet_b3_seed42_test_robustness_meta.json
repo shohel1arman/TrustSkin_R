@@ -1,0 +1,15 @@
+{
+  "run": "efficientnet_b3_seed42",
+  "n": 404,
+  "clean_accuracy": 0.7005,
+  "families": [
+    "gaussian_noise",
+    "gaussian_blur",
+    "brightness",
+    "contrast",
+    "jpeg",
+    "occlusion",
+    "rotation"
+  ],
+  "device": "mps"
+}

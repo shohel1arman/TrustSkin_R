@@ -1,0 +1,5 @@
+family,ssim,cosine,spearman,iou_p20,pred_unchanged
+brightness,0.7957,0.9353,0.8029,0.6207,0.7321
+contrast,0.8441,0.9559,0.8583,0.664,0.7768
+gaussian_blur,0.8096,0.9399,0.8287,0.6407,0.6786
+gaussian_noise,0.6334,0.8646,0.6382,0.4601,0.5625

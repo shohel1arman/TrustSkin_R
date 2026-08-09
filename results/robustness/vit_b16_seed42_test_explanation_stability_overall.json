@@ -1,0 +1,8 @@
+{
+  "run": "vit_b16_seed42",
+  "n_images": 56,
+  "mean_ssim": 0.7821,
+  "mean_cosine": 0.2235,
+  "mean_spearman": 0.1971,
+  "mean_iou_p20": 0.7438
+}

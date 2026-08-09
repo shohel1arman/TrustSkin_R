@@ -1,0 +1,8 @@
+{
+  "run": "swin_tiny_seed42",
+  "n_images": 56,
+  "mean_ssim": 0.4454,
+  "mean_cosine": 0.6241,
+  "mean_spearman": 0.3519,
+  "mean_iou_p20": 0.3279
+}

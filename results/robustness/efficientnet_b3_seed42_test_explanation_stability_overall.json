@@ -1,0 +1,8 @@
+{
+  "run": "efficientnet_b3_seed42",
+  "n_images": 56,
+  "mean_ssim": 0.7684,
+  "mean_cosine": 0.9203,
+  "mean_spearman": 0.8529,
+  "mean_iou_p20": 0.5882
+}

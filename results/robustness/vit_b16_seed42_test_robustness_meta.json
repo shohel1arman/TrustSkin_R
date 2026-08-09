@@ -1,0 +1,15 @@
+{
+  "run": "vit_b16_seed42",
+  "n": 404,
+  "clean_accuracy": 0.6733,
+  "families": [
+    "gaussian_noise",
+    "gaussian_blur",
+    "brightness",
+    "contrast",
+    "jpeg",
+    "occlusion",
+    "rotation"
+  ],
+  "device": "mps"
+}

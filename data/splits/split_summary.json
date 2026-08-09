@@ -10,42 +10,42 @@
     "vasc"
   ],
   "n_images": {
-    "train": 7009,
-    "val": 1002,
-    "test": 2004
+    "train": 6981,
+    "val": 1020,
+    "test": 2014
   },
   "n_lesions": {
-    "train": 5228,
-    "val": 747,
+    "train": 5229,
+    "val": 746,
     "test": 1495
   },
   "class_counts": {
     "train": {
-      "akiec": 228,
-      "bcc": 359,
-      "bkl": 769,
-      "df": 81,
-      "mel": 779,
-      "nv": 4694,
-      "vasc": 99
+      "akiec": 239,
+      "bcc": 358,
+      "bkl": 777,
+      "df": 79,
+      "mel": 758,
+      "nv": 4676,
+      "vasc": 94
     },
     "val": {
-      "akiec": 33,
-      "bcc": 52,
-      "bkl": 110,
-      "df": 11,
-      "mel": 112,
-      "nv": 670,
+      "akiec": 20,
+      "bcc": 56,
+      "bkl": 117,
+      "df": 14,
+      "mel": 133,
+      "nv": 666,
       "vasc": 14
     },
     "test": {
-      "akiec": 66,
-      "bcc": 103,
-      "bkl": 220,
-      "df": 23,
+      "akiec": 68,
+      "bcc": 100,
+      "bkl": 205,
+      "df": 22,
       "mel": 222,
-      "nv": 1341,
-      "vasc": 29
+      "nv": 1363,
+      "vasc": 34
     }
   }
 }

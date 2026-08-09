@@ -21,28 +21,20 @@ def entropy(p, axis=-1):
 
 @torch.no_grad()
 def mc_forward(model, loader, device, T):
+    """Each image loaded once; T dropout passes run in memory."""
     enable_mc_dropout(model)
-    all_pass = []
-    targets, ids = [], []
-    first = True
-    for t in range(T):
-        pass_probs = []
-        tg_tmp, id_tmp = [], []
-        for x, y, image_ids in loader:
-            x = x.to(device, non_blocking=True)
+    batch_stacks, targets, ids = [], [], []
+    for x, y, image_ids in loader:
+        x = x.to(device, non_blocking=True)
+        passes = []
+        for _ in range(T):
             logits = model(x)
-            probs = torch.softmax(logits, dim=1).cpu().numpy()
-            pass_probs.append(probs)
-            if first:
-                tg_tmp.append(y.numpy())
-                id_tmp.extend(list(image_ids))
-        all_pass.append(np.concatenate(pass_probs, axis=0))
-        if first:
-            targets = np.concatenate(tg_tmp, axis=0)
-            ids = np.array(id_tmp)
-            first = False
-    return np.stack(all_pass, axis=0), targets, ids
-
+            passes.append(torch.softmax(logits, dim=1).cpu().numpy())
+        batch_stacks.append(np.stack(passes, axis=0))
+        targets.append(y.numpy())
+        ids.extend(list(image_ids))
+    probs_TNK = np.concatenate(batch_stacks, axis=1)
+    return probs_TNK, np.concatenate(targets), np.array(ids)
 
 def uncertainty_scores(probs_TNK):
     T, N, K = probs_TNK.shape

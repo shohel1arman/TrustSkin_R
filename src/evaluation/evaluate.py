@@ -33,11 +33,14 @@ from src.models.factory import create_model
 def collect_logits(model, loader, device):
     model.eval()
     logits_all, targets_all, ids_all = [], [], []
-    for x, y, ids in loader:
+    n_batches = len(loader)
+    for i, (x, y, ids) in enumerate(loader):
         x = x.to(device, non_blocking=True)
         logits_all.append(model(x).cpu())
         targets_all.append(y)
         ids_all.extend(list(ids))
+        if (i + 1) % 20 == 0 or (i + 1) == n_batches:
+            print(f"  batch {i+1}/{n_batches}", flush=True)
     return torch.cat(logits_all).numpy(), torch.cat(targets_all).numpy(), ids_all
 
 

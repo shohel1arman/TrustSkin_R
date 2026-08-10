@@ -1,0 +1,54 @@
+[
+  {
+    "run": "efficientnet_b3_seed42",
+    "temperature_ham": 2.65,
+    "ece": 0.3083,
+    "ece_ts": 0.1044,
+    "mce": 0.478,
+    "mce_ts": 0.1531,
+    "brier": 0.7146,
+    "brier_ts": 0.5871,
+    "nll": 2.2473,
+    "nll_ts": 1.2473,
+    "accuracy": 0.5639
+  },
+  {
+    "run": "convnext_tiny_seed42",
+    "temperature_ham": 2.6,
+    "ece": 0.3515,
+    "ece_ts": 0.1932,
+    "mce": 0.4785,
+    "mce_ts": 0.2505,
+    "brier": 0.7716,
+    "brier_ts": 0.6416,
+    "nll": 3.042,
+    "nll_ts": 1.4542,
+    "accuracy": 0.5561
+  },
+  {
+    "run": "vit_b16_seed42",
+    "temperature_ham": 1.6,
+    "ece": 0.2668,
+    "ece_ts": 0.1517,
+    "mce": 0.3427,
+    "mce_ts": 0.2838,
+    "brier": 0.7465,
+    "brier_ts": 0.6822,
+    "nll": 1.9486,
+    "nll_ts": 1.4895,
+    "accuracy": 0.5127
+  },
+  {
+    "run": "swin_tiny_seed42",
+    "temperature_ham": 2.05,
+    "ece": 0.3122,
+    "ece_ts": 0.1705,
+    "mce": 0.4222,
+    "mce_ts": 0.8058,
+    "brier": 0.7235,
+    "brier_ts": 0.6183,
+    "nll": 2.1365,
+    "nll_ts": 1.3245,
+    "accuracy": 0.5581
+  }
+]

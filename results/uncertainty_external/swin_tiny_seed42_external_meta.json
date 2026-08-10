@@ -1,0 +1,8 @@
+{
+  "run": "swin_tiny_seed42",
+  "split": "external",
+  "T": 30,
+  "n": 14885,
+  "accuracy": 0.5576083305340948,
+  "device": "cuda"
+}

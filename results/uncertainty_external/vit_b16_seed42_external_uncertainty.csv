@@ -1,0 +1,6 @@
+run,split,score,err_auroc,err_auprc,aurc
+vit_b16_seed42,external,neg_confidence,0.621,0.6076,0.397
+vit_b16_seed42,external,predictive_entropy,0.6267,0.613,0.3942
+vit_b16_seed42,external,expected_entropy,0.6263,0.6126,0.3944
+vit_b16_seed42,external,mutual_information,0.6184,0.5875,0.3955
+vit_b16_seed42,external,variance,0.6054,0.5698,0.4021

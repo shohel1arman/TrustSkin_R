@@ -1,0 +1,8 @@
+{
+  "run": "vit_b16_seed42",
+  "split": "external",
+  "T": 30,
+  "n": 14885,
+  "accuracy": 0.5115888478333893,
+  "device": "cuda"
+}

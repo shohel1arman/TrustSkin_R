@@ -6,3 +6,4 @@ data/isic_external/
 results/checkpoints/
 results/logits/
 *.zip
+results/uncertainty_external/per_image/

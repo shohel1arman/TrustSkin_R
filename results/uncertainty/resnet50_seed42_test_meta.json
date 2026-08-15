@@ -1,0 +1,8 @@
+{
+  "run": "resnet50_seed42",
+  "split": "test",
+  "T": 30,
+  "n": 2014,
+  "accuracy": 0.7964250248262165,
+  "device": "cuda"
+}

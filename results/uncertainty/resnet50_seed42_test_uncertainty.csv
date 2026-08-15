@@ -1,0 +1,6 @@
+run,split,score,err_auroc,err_auprc,aurc
+resnet50_seed42,test,neg_confidence,0.8095,0.4627,0.0723
+resnet50_seed42,test,predictive_entropy,0.8093,0.471,0.0725
+resnet50_seed42,test,expected_entropy,0.8093,0.471,0.0725
+resnet50_seed42,test,mutual_information,0.4926,0.2084,0.206
+resnet50_seed42,test,variance,0.4173,0.1655,0.2179

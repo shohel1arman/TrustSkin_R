@@ -1,0 +1,8 @@
+{
+  "run": "efficientnet_b3_seed44",
+  "split": "test",
+  "T": 30,
+  "n": 2014,
+  "accuracy": 0.8232373386295928,
+  "device": "cuda"
+}

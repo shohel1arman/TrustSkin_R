@@ -1,0 +1,8 @@
+{
+  "run": "vit_b16_seed44",
+  "split": "test",
+  "T": 30,
+  "n": 2014,
+  "accuracy": 0.7358490566037735,
+  "device": "cuda"
+}

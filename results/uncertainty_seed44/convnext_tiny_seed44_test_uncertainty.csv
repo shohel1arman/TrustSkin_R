@@ -1,0 +1,6 @@
+run,split,score,err_auroc,err_auprc,aurc
+convnext_tiny_seed44,test,neg_confidence,0.8156,0.5267,0.0869
+convnext_tiny_seed44,test,predictive_entropy,0.8179,0.5334,0.0862
+convnext_tiny_seed44,test,expected_entropy,0.8177,0.5327,0.0862
+convnext_tiny_seed44,test,mutual_information,0.8177,0.5489,0.0861
+convnext_tiny_seed44,test,variance,0.8148,0.5369,0.087

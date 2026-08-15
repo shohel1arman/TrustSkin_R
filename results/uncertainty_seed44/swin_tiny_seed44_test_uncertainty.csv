@@ -1,0 +1,6 @@
+run,split,score,err_auroc,err_auprc,aurc
+swin_tiny_seed44,test,neg_confidence,0.8555,0.4451,0.0367
+swin_tiny_seed44,test,predictive_entropy,0.8565,0.4525,0.0365
+swin_tiny_seed44,test,expected_entropy,0.8567,0.4535,0.0365
+swin_tiny_seed44,test,mutual_information,0.8537,0.4179,0.0376
+swin_tiny_seed44,test,variance,0.8531,0.4136,0.0371

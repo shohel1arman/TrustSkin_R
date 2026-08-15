@@ -1,0 +1,6 @@
+run,split,score,err_auroc,err_auprc,aurc
+efficientnet_b3_seed44,test,neg_confidence,0.8557,0.5014,0.0456
+efficientnet_b3_seed44,test,predictive_entropy,0.8572,0.5148,0.0449
+efficientnet_b3_seed44,test,expected_entropy,0.8572,0.5148,0.0449
+efficientnet_b3_seed44,test,mutual_information,0.5448,0.2121,0.1619
+efficientnet_b3_seed44,test,variance,0.5924,0.2084,0.1125

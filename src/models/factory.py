@@ -17,6 +17,7 @@ MODEL_REGISTRY = {
     "swin_tiny": "swin_tiny_patch4_window7_224",
     # small model used only for pipeline smoke tests
     "resnet18": "resnet18",
+    "resnet50": "resnet50",
 }
 
 

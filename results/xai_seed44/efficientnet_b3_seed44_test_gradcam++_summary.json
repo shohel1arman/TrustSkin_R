@@ -1,0 +1,15 @@
+{
+  "run": "efficientnet_b3_seed44",
+  "method": "gradcam++",
+  "n": 306,
+  "missing_mask": 0,
+  "mean_iou": 0.4936,
+  "mean_iou_p20": 0.3822,
+  "mean_dice": 0.6367,
+  "mean_focus_ratio": 3.6586,
+  "pointing_game": 0.6536,
+  "mean_lesion_frac": 0.5273,
+  "mean_bg_frac": 0.4727,
+  "iou_correct": 0.4907,
+  "iou_wrong": 0.5012
+}

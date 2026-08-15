@@ -1,0 +1,15 @@
+{
+  "run": "vit_b16_seed44",
+  "method": "gradcam++",
+  "n": 306,
+  "missing_mask": 0,
+  "mean_iou": 0.0642,
+  "mean_iou_p20": 0.2395,
+  "mean_dice": 0.102,
+  "mean_focus_ratio": 6.6522,
+  "pointing_game": 0.3301,
+  "mean_lesion_frac": 0.3593,
+  "mean_bg_frac": 0.6407,
+  "iou_correct": 0.0613,
+  "iou_wrong": 0.0693
+}

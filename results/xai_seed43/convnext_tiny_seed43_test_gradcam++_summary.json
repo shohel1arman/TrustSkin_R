@@ -1,0 +1,15 @@
+{
+  "run": "convnext_tiny_seed43",
+  "method": "gradcam++",
+  "n": 306,
+  "missing_mask": 0,
+  "mean_iou": 0.0128,
+  "mean_iou_p20": 0.1384,
+  "mean_dice": 0.025,
+  "mean_focus_ratio": 1.2111,
+  "pointing_game": 0.3366,
+  "mean_lesion_frac": 0.3291,
+  "mean_bg_frac": 0.6709,
+  "iou_correct": 0.0131,
+  "iou_wrong": 0.0117
+}

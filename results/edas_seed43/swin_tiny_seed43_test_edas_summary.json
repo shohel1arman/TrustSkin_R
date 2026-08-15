@@ -1,0 +1,12 @@
+{
+  "run": "swin_tiny_seed43",
+  "n": 306,
+  "topk": 0.15,
+  "mean_drop_high": 0.1769,
+  "mean_drop_rand": 0.0339,
+  "mean_edas": 0.143,
+  "mean_edas_norm": 0.1998,
+  "faithful_fraction": 0.7026,
+  "edas_correct": 0.1173,
+  "edas_wrong": 0.2087
+}

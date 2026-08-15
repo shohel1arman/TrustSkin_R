@@ -1,0 +1,12 @@
+{
+  "run": "convnext_tiny_seed44",
+  "n": 306,
+  "topk": 0.15,
+  "mean_drop_high": 0.0612,
+  "mean_drop_rand": 0.0886,
+  "mean_edas": -0.0274,
+  "mean_edas_norm": -0.0332,
+  "faithful_fraction": 0.4542,
+  "edas_correct": -0.0217,
+  "edas_wrong": -0.043
+}

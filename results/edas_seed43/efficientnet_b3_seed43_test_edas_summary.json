@@ -1,0 +1,12 @@
+{
+  "run": "efficientnet_b3_seed43",
+  "n": 306,
+  "topk": 0.15,
+  "mean_drop_high": 0.1362,
+  "mean_drop_rand": 0.1004,
+  "mean_edas": 0.0358,
+  "mean_edas_norm": 0.0386,
+  "faithful_fraction": 0.4706,
+  "edas_correct": 0.0287,
+  "edas_wrong": 0.0545
+}

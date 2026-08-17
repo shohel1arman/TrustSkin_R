@@ -7,3 +7,6 @@ numpy>=1.24
 pyyaml>=6.0
 pillow>=10.0
 matplotlib>=3.7
+grad-cam>=1.5
+scipy>=1.10
+scikit-image>=0.21

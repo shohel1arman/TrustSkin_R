@@ -1,193 +1,135 @@
 # TrustSkin
 
-A framework for checking whether a skin-lesion image classifier is actually *trustworthy*, not just accurate.
+Code for **"Beyond accuracy: a multidimensional trustworthiness evaluation of deep models for skin lesion classification"** (Arman & Ahmed, manuscript under review).
 
-A model can be confident and still wrong. TrustSkin looks at a prediction from several angles at once — is it correct, does its confidence match reality, does it know when it might be wrong, does its explanation point at the lesion rather than the background, does it stay stable when the image is perturbed, and does it hold up on data from a different source — and combines these into a single per-image trust score.
+The question is simple: when two skin lesion classifiers reach similar accuracy, are they equally trustworthy? We train five backbones under one fixed, leakage-controlled protocol on HAM10000, repeat everything over three seeds (42, 43, 44), and evaluate each model on four axes beyond accuracy.
 
-The four backbones (EfficientNet-B3, ConvNeXt-Tiny, ViT-B/16, Swin-T) are just representative models to test the framework on. The interesting question is whether the most accurate model is also the most trustworthy — often it isn't.
-
----
-
-## What gets measured
-
-| Dimension | The question | How |
+| Axis | Question | Method |
 |---|---|---|
-| Correctness | Is the prediction right? | Accuracy, balanced accuracy, macro-F1, MCC, AUROC, AUPRC |
-| Calibration | Does confidence match correctness? | ECE, MCE, Brier, NLL, reliability diagrams, temperature scaling |
-| Uncertainty | Does the model know when it might be wrong? | MC Dropout, deep ensembles, risk–coverage, AURC |
-| Explanation quality | Does the explanation point at the lesion? | Grad-CAM/++, Integrated Gradients, attention rollout; IoU, Dice, pointing game |
-| Robustness | Do predictions survive realistic image changes? | 7 perturbation families × 5 severities |
-| Explanation stability | Do explanations survive the same changes? | SSIM, cosine, IoU/Dice, Spearman on clean vs perturbed maps |
-| Alignment (EDAS) | Do the "important" regions actually drive the decision? | Paired counterfactual masking of important vs control regions |
-| Distribution shift | Do the trust signals degrade sensibly on outside data? | External ISIC evaluation on a locked set |
+| Calibration | Does confidence match correctness? | ECE, MCE, Brier, NLL; temperature scaling fit on validation only |
+| Predictive uncertainty | Does the model know when it may be wrong? | MC dropout (T=30); total vs epistemic uncertainty, scored as error-detection AUROC |
+| Explanation localization | Does the explanation point at the lesion? | Grad-CAM++ vs expert lesion masks (IoU, pointing game) |
+| Explanation faithfulness | Does the decision actually depend on the highlighted region? | EDAS: masking the salient region vs a same-size control region |
+| Distribution shift | Does any of this survive new data? | De-contaminated ISIC-2019 external set (14,885 images) |
 
----
+Backbones: ResNet-50, EfficientNet-B3 (convolutional); ConvNeXt-Tiny, ViT-B/16, Swin-Tiny (attention-era).
 
-## How it's organized
+## Main findings
 
-The work moves in stages. First: leakage-controlled data splits, baseline training for the four backbones, and full classification metrics. Then calibration, uncertainty, explainability and localization, robustness and explanation stability, the EDAS counterfactual test, and finally the combined trust score with external-shift evaluation and ablations. Later stages reuse the saved probabilities from the baseline stage, so they don't need to re-run inference.
-
----
+- Accuracy and trustworthiness are decoupled. The most accurate in-distribution models are among the least lesion-focused and least faithful.
+- Epistemic uncertainty from MC dropout is near-random for the CNNs (error-detection AUROC ~0.50) but informative for the attention-era models (~0.83).
+- Under distribution shift, calibration does not transfer and melanoma recall drops to 0.26-0.37.
+- A learned score combining all axes does not beat plain confidence at flagging errors, so trust is reported as a profile, not a single number.
 
 ## Repository layout
 
 ```
 TrustSkin_R/
-├── configs/                 # one YAML per backbone + a smoke config
-│   ├── efficientnet.yaml
-│   ├── convnext.yaml
-│   ├── vit.yaml
-│   ├── swin.yaml
-│   └── smoke.yaml           # tiny resnet18 pipeline check, not for real runs
+├── configs/                  # one YAML per backbone (+ smoke.yaml for a quick pipeline check)
+├── data/splits/              # locked lesion-grouped splits + de-contaminated external CSV
 ├── src/
-│   ├── data/
-│   │   ├── prepare_splits.py   # lesion-grouped, leakage-checked train/val/test
-│   │   └── dataset.py          # HAM10000 dataset + train/eval transforms
-│   ├── models/
-│   │   └── factory.py          # timm backbones + MC-Dropout hook
-│   ├── training/
-│   │   └── train.py            # AdamW, cosine, AMP, class-weighted loss, early stop
-│   └── evaluation/
-│       └── evaluate.py         # all classification metrics + saved logits/probs
-├── data/
-│   ├── ham10000/            # dataset (gitignored)
-│   └── splits/              # locked split CSVs (committed)
-├── results/
-│   ├── csv/                 # metrics / per-class / confusion
-│   ├── logits/              # saved probabilities, reused later (gitignored)
-│   └── checkpoints/         # best.pt, history.csv, config, env (gitignored)
-├── requirements.txt
-└── README.md
+│   ├── data/                 # split preparation and dataset
+│   ├── data_prep/            # ISIC-2019 de-contamination
+│   ├── models/               # timm backbones + MC-dropout hook
+│   ├── training/             # training loop
+│   ├── evaluation/           # classification metrics, saved logits
+│   ├── calibration/          # temperature scaling (in-distribution and external)
+│   ├── uncertainty/          # MC dropout
+│   ├── xai/                  # Grad-CAM++ localization vs lesion masks
+│   ├── edas/                 # counterfactual faithfulness (EDAS)
+│   ├── trust/                # learned trust-score combiner (negative result)
+│   ├── robustness/           # exploratory, not reported in the paper
+│   └── visualization/
+├── results/                  # per-seed CSVs and results/aggregate/ (mean ± std)
+├── figures/                  # paper figures
+└── make_figures.py
 ```
 
----
+Checkpoints and raw logits are not committed (too large).
 
 ## Setup
 
-Needs Python 3.10+ and [`uv`](https://github.com/astral-sh/uv). If conda is active, run `conda deactivate` first.
+Python 3.10+ and [uv](https://github.com/astral-sh/uv):
 
-```bash
+```
 uv venv
 source .venv/bin/activate
 uv pip install -r requirements.txt
-python -c "import torch, timm, sklearn, pandas, PIL, yaml; print('imports OK')"
 ```
 
----
+## Data
 
-## Dataset
+- **HAM10000**: Kaggle `kmader/skin-cancer-mnist-ham10000` or Harvard Dataverse (DOI `10.7910/DVN/DBW86T`). Put it under `data/ham10000/`.
+- **Lesion masks** (localization and EDAS): Tschandl et al. HAM10000 lesion segmentations.
+- **ISIC-2019** (external test only): put it under `data/isic2019/`. It contains all of HAM10000, so it must be de-contaminated before use (step 1 below).
 
-**HAM10000** — 10,015 dermoscopic images, 7 classes. The class balance is skewed (NV dominates), so the project leans on macro metrics, balanced accuracy, MCC, and per-class numbers rather than raw accuracy.
+## Reproducing the pipeline
 
-| Code | Category | Type |
-|---|---|---|
-| MEL | Melanoma | Malignant |
-| NV | Melanocytic nevi | Benign |
-| BCC | Basal cell carcinoma | Malignant |
-| AKIEC | Actinic keratoses / intraepithelial carcinoma | Pre-/malignant |
-| BKL | Benign keratosis | Benign |
-| DF | Dermatofibroma | Benign |
-| VASC | Vascular lesion | Benign |
+**0. Splits.** HAM10000 has several photos of the same lesion, so we split by `lesion_id`. The split CSVs in `data/splits/` are the exact ones used in the paper.
 
-Grab it from Kaggle (`kmader/skin-cancer-mnist-ham10000`) or Harvard Dataverse (DOI `10.7910/DVN/DBW86T`):
-
-```bash
-mkdir -p data/ham10000 && cd data/ham10000
-kaggle datasets download kmader/skin-cancer-mnist-ham10000
-unzip -q skin-cancer-mnist-ham10000.zip
-cd ../..
 ```
-
-After unzipping you should have `HAM10000_metadata.csv` and images in `HAM10000_images_part_1/` and `HAM10000_images_part_2/`. If your unzip drops everything into one image folder instead of two, just pass that single folder to `--image-dirs`.
-
-External data (ISIC 2018/2019) is used only for the out-of-domain check and is kept away from all training and model selection.
-
----
-
-## Running it
-
-**1. Make the splits.** HAM10000 has several images of the same lesion, so splitting by image leaks. This groups by `lesion_id`, stratifies roughly by class, and stops with an error if any lesion ends up in two splits. Roughly 70/10/20.
-
-```bash
 uv run python -m src.data.prepare_splits \
     --metadata data/ham10000/HAM10000_metadata.csv \
     --image-dirs data/ham10000/HAM10000_images_part_1 data/ham10000/HAM10000_images_part_2 \
     --out-dir data/splits --seed 42
 ```
 
-Commit `data/splits/*.csv` — the exact split matters for reproducing results.
+**1. External set.** Removes every ISIC-2019 image that originates from HAM10000 (exactly 10,015), plus the SCC and unknown classes.
 
-**2. Train the backbones.** Best checkpoint is picked on validation macro-F1. Add `--seed 43` / `--seed 44` for the multi-seed runs.
-
-```bash
-uv run python -m src.training.train --config configs/efficientnet.yaml
-uv run python -m src.training.train --config configs/convnext.yaml
-uv run python -m src.training.train --config configs/vit.yaml
-uv run python -m src.training.train --config configs/swin.yaml
+```
+uv run python -m src.data_prep.decontaminate_isic
 ```
 
-**3. Evaluate on val and test.**
+**2. Train.** Repeat with `--seed 43` and `--seed 44`.
 
-```bash
-uv run python -m src.evaluation.evaluate \
-    --checkpoint results/checkpoints/efficientnet_b3_seed42/best.pt \
-    --split-csv data/splits/test.csv --split-name test
 ```
-
-Or loop over all four:
-
-```bash
-for m in efficientnet_b3 convnext_tiny vit_b16 swin_tiny; do
-  uv run python -m src.evaluation.evaluate --checkpoint results/checkpoints/${m}_seed42/best.pt --split-csv data/splits/val.csv  --split-name val
-  uv run python -m src.evaluation.evaluate --checkpoint results/checkpoints/${m}_seed42/best.pt --split-csv data/splits/test.csv --split-name test
+for m in resnet50 efficientnet convnext vit swin; do
+  uv run python -m src.training.train --config configs/$m.yaml --seed 42
 done
 ```
 
-Everything lands in `results/csv/` (metrics, per-class, confusion), `results/logits/` (raw probabilities, reused later), and `results/checkpoints/<run>/` (checkpoint, training history, config, environment).
+**3. Evaluate** (saves logits used by later stages):
 
-**Quick pipeline check** before spending GPU time:
-
-```bash
-uv run python -m src.training.train --config configs/smoke.yaml
+```
+uv run python -m src.evaluation.evaluate \
+    --checkpoint results/checkpoints/<run>/best.pt \
+    --split-csv data/splits/test.csv --split-name test
 ```
 
----
+**4. Trust axes:**
 
-## On the GPU node
+```
+# calibration (temperature fit on val, applied to test)
+uv run python -m src.calibration.calibrate --runs <run> [<run> ...]
+uv run python -m src.calibration.calibrate_external --runs <run> [<run> ...]
 
-Run training in `tmux` so a dropped SSH connection doesn't kill it. Rebuild the splits on the node with the same seed so the file paths point to node-local images (same lesion assignment, just different paths).
+# MC-dropout uncertainty
+uv run python -m src.uncertainty.mc_dropout --checkpoint <ckpt> --split-csv data/splits/test.csv
 
-```bash
-tmux new -s trustskin
-uv run python -m src.data.prepare_splits \
-    --metadata data/ham10000/HAM10000_metadata.csv \
-    --image-dirs data/ham10000/HAM10000_images_part_1 data/ham10000/HAM10000_images_part_2 \
-    --out-dir data/splits --seed 42
-uv run python -m src.training.train --config configs/efficientnet.yaml && \
-uv run python -m src.training.train --config configs/convnext.yaml && \
-uv run python -m src.training.train --config configs/vit.yaml && \
-uv run python -m src.training.train --config configs/swin.yaml
-# detach: Ctrl-b then d   |   reattach: tmux attach -t trustskin
+# Grad-CAM++ localization
+uv run python -m src.xai.gradcam_localize --checkpoint <ckpt> --split-csv data/splits/test.csv --mask-dir <masks>
+
+# EDAS faithfulness
+uv run python -m src.edas.edas_counterfactual --checkpoint <ckpt> --split-csv data/splits/test.csv
+
+# learned trust score
+uv run python -m src.trust.learned_trust --run <run>
 ```
 
----
+Note: `calibrate.py` overwrites the shared `calibration_summary.csv` with only the runs you pass, so pass all runs together.
 
-## Quick sanity check
+**5. Figures:**
 
-On a lesion-grouped split, test macro-F1 around **0.70–0.80** is normal. If it's above ~0.90, that usually means leakage, not a great model — check the split. If one backbone is way behind the others, it's probably a learning-rate mismatch in its config.
+```
+uv run python make_figures.py
+```
 
----
+## Rules we kept
 
-## A few rules worth keeping
+- The test split is locked; nothing is tuned or selected on it.
+- The external set is never used for training, model selection, or fitting temperatures.
+- Every number in the paper is mean ± std over seeds 42/43/44.
 
-- The test split is locked once made — never tune or model-select on it.
-- External ISIC data stays unseen during development.
-- Every result and checkpoint carries its `<model>_seed<seed>` run name.
-- Final numbers are mean ± std over seeds 42 / 43 / 44.
-- Config, seed, library versions, and hardware are saved per run.
+## Scope
 
----
-
-## A note on scope
-
-HAM10000 and ISIC don't cover every population, device, or clinic. The trust score is a research tool, not a clinical decision rule — real use would need prospective validation and clinical review. Heatmaps are hints about model behavior, not proof of cause, which is the whole reason EDAS and the counterfactual tests exist.
+This is a research evaluation, not a clinical tool. HAM10000 and ISIC do not cover every population, device, or clinic, and the clinical implications in the paper were not validated with dermatologists.
